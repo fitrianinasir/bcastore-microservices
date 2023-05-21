@@ -20,7 +20,7 @@ import java.util.function.Function;
 public class JwtService implements IJwtService{
 
     private static final String SECRET_KEY = "73357638792F423F4528482B4B6250655368566D597133743677397A24432646";
-    @Override
+
     public String extractEmail(String token){
         return extractClaim(token, Claims::getSubject);
     }
@@ -30,10 +30,11 @@ public class JwtService implements IJwtService{
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails){
+    public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails){
+
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
@@ -59,11 +60,16 @@ public class JwtService implements IJwtService{
     }
     private Claims extractAllClaims(String token){
         return Jwts
-                .parserBuilder()
-                .setSigningKey(getSignInKey())
-                .build()
-                .parseClaimsJwt(token)
+                .parser()
+                .setSigningKey(SECRET_KEY)
+                .parseClaimsJws(token)
                 .getBody();
+//        return Jwts
+//                .parserBuilder()
+//                .setSigningKey(getSignInKey())
+//                .build()
+//                .parseClaimsJwt(token)
+//                .getBody();
     }
 
     private Key getSignInKey() {

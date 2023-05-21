@@ -5,17 +5,21 @@ import com.shop.customers.dto.CustomerDTO;
 import com.shop.customers.dto.MessageResponseDTO;
 import com.shop.customers.model.CustomerModel;
 import com.shop.customers.repository.CustomerRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api")
+@RequiredArgsConstructor
 public class CustomerController {
     @Autowired
     private CustomerRepository customerRepository;
 
+    private final PasswordEncoder passwordEncoder;
     @GetMapping("/customers")
     public @ResponseBody ResponseEntity<CustomerDTO> getAllCustomers(){
         CustomerDTO customerDTO = new CustomerDTO();
@@ -58,26 +62,29 @@ public class CustomerController {
             @PathVariable("id") Integer id,
             @RequestBody CustomerModel customerModel
     ){
-//        if(customerRepository.existsByEmail(customerModel.getEmail())){
-//            CustomerModel checkExistingEmail = customerRepository.findbyemail(customerModel.getEmail());
-//            if(customerModel.getId() == checkExistingEmail.getId()){
-//                customerModel.setId(id);
-//                CustomerDTO customerDTO = new CustomerDTO();
-//                customerDTO.setStatus(200);
-//                customerDTO.setMessage("Data updated successfully");
-//                customerDTO.setData(customerRepository.save(customerModel));
-//                return new ResponseEntity<>(customerDTO, HttpStatus.OK);
-//            }
-//
-//            MessageResponseDTO messageResponseDTO = new MessageResponseDTO();
-//            messageResponseDTO.setMessage("Email is already taken!");
-//            return new ResponseEntity<>(messageResponseDTO, HttpStatus.BAD_REQUEST);
-//        }
+        if(customerRepository.existsByEmail(customerModel.getEmail())){
+            System.out.println("Extracted from CustomerController -> " + customerModel.getEmail());
+            CustomerModel checkExistingEmail = customerRepository.findByEmail(customerModel.getEmail());
+            if(customerModel.getId() == checkExistingEmail.getId()){
+                customerModel.setId(id);
+                customerModel.setPassword(passwordEncoder.encode(customerModel.getPassword()));
+                CustomerDTO customerDTO = new CustomerDTO();
+                customerDTO.setStatus(200);
+                customerDTO.setMessage("Data updated successfully");
+                customerDTO.setData(customerRepository.save(customerModel));
+                return new ResponseEntity<>(customerDTO, HttpStatus.OK);
+            }
+
+            MessageResponseDTO messageResponseDTO = new MessageResponseDTO();
+            messageResponseDTO.setMessage("Email is already taken!");
+            return new ResponseEntity<>(messageResponseDTO, HttpStatus.BAD_REQUEST);
+        }
 
         if(customerRepository.existsByAccountNumber(customerModel.getAccountNumber())){
             CustomerModel checkExistingAccountNumber = customerRepository.findByAccountNumber(customerModel.getAccountNumber());
             if(customerModel.getId() == checkExistingAccountNumber.getId()){
                 customerModel.setId(id);
+                customerModel.setPassword(passwordEncoder.encode(customerModel.getPassword()));
                 CustomerDTO customerDTO = new CustomerDTO();
                 customerDTO.setStatus(200);
                 customerDTO.setMessage("Data updated successfully");
@@ -97,6 +104,7 @@ public class CustomerController {
         }
 
         customerModel.setId(id);
+        customerModel.setPassword(passwordEncoder.encode(customerModel.getPassword()));
         CustomerDTO customerDTO = new CustomerDTO();
         customerDTO.setStatus(200);
         customerDTO.setMessage("Data updated successfully");

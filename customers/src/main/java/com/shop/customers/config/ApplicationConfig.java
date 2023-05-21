@@ -1,5 +1,6 @@
 package com.shop.customers.config;
 
+import com.shop.customers.repository.AuthRepository;
 import com.shop.customers.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -17,11 +18,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
-    private final CustomerRepository customerRepository;
+    private final AuthRepository authRepository;
 
     @Bean
     public UserDetailsService userDetailsService(){
-        return username -> customerRepository
+        return username -> authRepository
                 .findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Email not found"));
     }

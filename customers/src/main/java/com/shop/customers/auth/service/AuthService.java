@@ -4,6 +4,7 @@ import com.shop.customers.auth.DTO.Request.LoginRequest;
 import com.shop.customers.auth.DTO.Response.AuthResponse;
 import com.shop.customers.model.CustomerModel;
 import com.shop.customers.model.Role;
+import com.shop.customers.repository.AuthRepository;
 import com.shop.customers.repository.CustomerRepository;
 import com.shop.customers.service.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService {
     private final CustomerRepository customerRepository;
+    private final AuthRepository authRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -42,7 +44,7 @@ public class AuthService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
         );
-        var user = customerRepository.findByEmail(loginRequest.getEmail()).orElseThrow();
+        var user = authRepository.findByEmail(loginRequest.getEmail()).orElseThrow();
         var jwtToken = jwtService.generateToken(user);
         return AuthResponse.builder().token(jwtToken).build();
     }
