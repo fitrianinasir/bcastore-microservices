@@ -52,7 +52,6 @@ public class CustomerModel implements UserDetails {
     @Column(name="insert_date")
     private String insertDate;
 
-
     @Enumerated(EnumType.STRING)
     private Role role;
     @Override
@@ -85,4 +84,6 @@ public class CustomerModel implements UserDetails {
     public boolean isEnabled(){
         return true;
     }
+
+
 }
