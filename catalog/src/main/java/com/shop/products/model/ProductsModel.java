@@ -11,7 +11,7 @@ import lombok.*;
 @Setter
 @Entity
 @Table(name="tbl_products_mst")
-public class CatalogModel {
+public class ProductsModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
