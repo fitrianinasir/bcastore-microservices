@@ -55,7 +55,7 @@ public class JwtService implements IJwtService{
         return extractExpiration(token).before(new Date());
     }
 
-        public Date extractExpiration(String token){
+    public Date extractExpiration(String token){
         return extractClaim(token, Claims::getExpiration);
     }
     private Claims extractAllClaims(String token){
@@ -64,12 +64,6 @@ public class JwtService implements IJwtService{
                 .setSigningKey(SECRET_KEY)
                 .parseClaimsJws(token)
                 .getBody();
-//        return Jwts
-//                .parserBuilder()
-//                .setSigningKey(getSignInKey())
-//                .build()
-//                .parseClaimsJwt(token)
-//                .getBody();
     }
 
     private Key getSignInKey() {

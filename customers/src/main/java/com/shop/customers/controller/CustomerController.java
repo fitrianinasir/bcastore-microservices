@@ -63,7 +63,6 @@ public class CustomerController {
             @RequestBody CustomerModel customerModel
     ){
         if(customerRepository.existsByEmail(customerModel.getEmail())){
-            System.out.println("Extracted from CustomerController -> " + customerModel.getEmail());
             CustomerModel checkExistingEmail = customerRepository.findByEmail(customerModel.getEmail());
             if(customerModel.getId() == checkExistingEmail.getId()){
                 customerModel.setId(id);
