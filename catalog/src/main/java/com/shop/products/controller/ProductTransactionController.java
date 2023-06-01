@@ -16,15 +16,16 @@ import org.springframework.web.bind.annotation.*;
 public class ProductTransactionController {
 
     @Autowired
-    private ProductsRepository productsRepository;
+    ProductsRepository productsRepository;
+
+    @Autowired
     ProductService productService;
 
     @PostMapping("/order")
     public @ResponseBody ResponseEntity<MessageResponse> orderProduct(@RequestBody RequestProduct requestProduct){
-        System.out.println(requestProduct);
         MessageResponse messageResponse = new MessageResponse();
         messageResponse.setStatus(200);
-        messageResponse.setMessage("Ordered Successfully");
+        messageResponse.setMessage("Order done Successfully");
         messageResponse.setData(productService.orderProduct(requestProduct));
         return new ResponseEntity<>(messageResponse, HttpStatus.OK);
     }
