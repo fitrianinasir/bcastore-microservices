@@ -23,10 +23,19 @@ public class ProductTransactionController {
 
     @PostMapping("/order")
     public @ResponseBody ResponseEntity<MessageResponse> orderProduct(@RequestBody RequestProduct requestProduct){
+        Object res = productService.orderProduct(requestProduct);
         MessageResponse messageResponse = new MessageResponse();
-        messageResponse.setStatus(200);
-        messageResponse.setMessage("Order done Successfully");
-        messageResponse.setData(productService.orderProduct(requestProduct));
-        return new ResponseEntity<>(messageResponse, HttpStatus.OK);
+        if(res != null){
+            messageResponse.setStatus(200);
+            messageResponse.setMessage("Order done Successfully");
+            messageResponse.setData(res);
+            return new ResponseEntity<>(messageResponse, HttpStatus.OK);
+        }else{
+            messageResponse.setStatus(400);
+            messageResponse.setMessage("Failed to order, stock unavailable");
+            messageResponse.setData(null);
+            return new ResponseEntity<>(messageResponse, HttpStatus.BAD_REQUEST);
+        }
+
     }
 }

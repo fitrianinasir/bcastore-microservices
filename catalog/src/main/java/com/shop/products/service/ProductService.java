@@ -18,17 +18,22 @@ public class ProductService implements IProductService{
     @Override
     public Object orderProduct(RequestProduct requestProduct){
         Optional<ProductsModel> data = productsRepository.findById(requestProduct.getProductId());
-        ProductsModel productsModel = new ProductsModel();
-        productsModel.setId(data.get().getId());
-        productsModel.setName(data.get().getName());
-        productsModel.setPrice(data.get().getPrice());
-        productsModel.setStock(data.get().getStock() - requestProduct.getAmount());
-        productsRepository.save(productsModel);
+        if(data.get().getStock() > 0){
+            ProductsModel productsModel = new ProductsModel();
+            productsModel.setId(data.get().getId());
+            productsModel.setName(data.get().getName());
+            productsModel.setPrice(data.get().getPrice());
+            productsModel.setStock(data.get().getStock() - requestProduct.getAmount());
+            productsRepository.save(productsModel);
 
-        ChargingResponse chargingResponse = new ChargingResponse();
-        chargingResponse.setPrice(data.get().getPrice());
-        chargingResponse.setAmount(requestProduct.getAmount());
-        chargingResponse.setTotal(requestProduct.getAmount() * data.get().getPrice());
-        return chargingResponse;
+            ChargingResponse chargingResponse = new ChargingResponse();
+            chargingResponse.setPrice(data.get().getPrice());
+            chargingResponse.setAmount(requestProduct.getAmount());
+            chargingResponse.setTotal(requestProduct.getAmount() * data.get().getPrice());
+            return chargingResponse;
+        }else{
+           return null;
+        }
+
     }
 }
