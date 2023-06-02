@@ -4,17 +4,15 @@ import com.shop.products.dto.Request.RequestIsTokenValid;
 import com.shop.products.dto.Request.RequestProduct;
 import com.shop.products.dto.Response.ChargingResponse;
 import com.shop.products.dto.Response.IsTokenValid;
-import com.shop.products.dto.Response.TokenValid;
 import com.shop.products.model.ProductsModel;
 import com.shop.products.repository.ProductsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -29,37 +27,70 @@ public class ProductService implements IProductService{
     @Autowired
     ProductsRepository productsRepository;
 
-
+    @Value("${auth.url}")
+    private String authUrl;
 
 
     public ProductService(RestTemplateBuilder builder){
         this.restTemplate = builder.build();
     }
 
-
-    @Override
-    public List<ProductsModel> findAll(){
-
+    public Boolean checkTokenIsValid(String token){
         RequestIsTokenValid requestIsTokenValid = new RequestIsTokenValid();
-        requestIsTokenValid.setToken("");
+        requestIsTokenValid.setToken(token);
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<RequestIsTokenValid> httpEntity = new HttpEntity<>(requestIsTokenValid, httpHeaders);
 
-
         IsTokenValid isTokenValid = restTemplate.postForObject(
-                "http://localhost:8081/api/auth/validate",
+                authUrl,
                 httpEntity,
                 IsTokenValid.class
         );
+        return isTokenValid.getIsValid();
+    }
 
-        if(isTokenValid.getIsValid() == true){
+
+    @Override
+    public List<ProductsModel> findAll(String token){
+        Boolean isTokenValid = checkTokenIsValid(token);
+        if(isTokenValid == true){
             return productsRepository.findAll();
         }else{
             return null;
         }
+    }
 
+    @Override
+    public Optional<ProductsModel> findById(Integer id, String token){
+        Boolean isTokenValid = checkTokenIsValid(token);
+        if(isTokenValid == true){
+            return productsRepository.findById(id);
+        }else{
+            return null;
+        }
+    }
+
+    @Override
+    public ProductsModel save(ProductsModel productsModel, String token){
+        Boolean isTokenValid = checkTokenIsValid(token);
+        if(isTokenValid == true){
+            return productsRepository.save(productsModel);
+        }else{
+            return null;
+        }
+    }
+
+    @Override
+    public Object delete(Integer id, String token){
+        Boolean isTokenValid = checkTokenIsValid(token);
+        if(isTokenValid == true){
+            productsRepository.deleteById(id);
+            return 1;
+        }else{
+            return null;
+        }
     }
     @Override
     public Object orderProduct(RequestProduct requestProduct){
