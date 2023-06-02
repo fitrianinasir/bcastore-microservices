@@ -14,6 +14,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -29,14 +30,18 @@ public class ProductService implements IProductService{
     ProductsRepository productsRepository;
 
 
+
+
     public ProductService(RestTemplateBuilder builder){
         this.restTemplate = builder.build();
     }
+
+
     @Override
     public List<ProductsModel> findAll(){
 
         RequestIsTokenValid requestIsTokenValid = new RequestIsTokenValid();
-        requestIsTokenValid.setToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmYWRpYWhAZ21haWwuY29tICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIiwiaWF0IjoxNjg1NjI1MTcxLCJleHAiOjE2ODU2MjY2MTF9.hjZyJOUoaUzRy9VC_E6j7sDWNEqL7J2oq7gxQrMEu7c");
+        requestIsTokenValid.setToken("");
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);

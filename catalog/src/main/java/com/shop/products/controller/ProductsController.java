@@ -1,6 +1,7 @@
 package com.shop.products.controller;
 
 import com.shop.products.dto.Response.MessageResponse;
+import com.shop.products.exceptions.CustomExceptionHandler;
 import com.shop.products.model.ProductsModel;
 import com.shop.products.repository.ProductsRepository;
 import com.shop.products.service.ProductService;
@@ -22,23 +23,20 @@ public class ProductsController {
     @Autowired
     ProductService productService;
 
+
     @GetMapping("products")
     public @ResponseBody ResponseEntity<MessageResponse> getAllProducts(){
-        List<ProductsModel> data = productService.findAll();
-        MessageResponse messageResponse = new MessageResponse();
 
-        if(data.isEmpty()){
-            messageResponse.setStatus(403);
-            messageResponse.setMessage("Unauthorized");
-            messageResponse.setData(null);
-            return new ResponseEntity<>(messageResponse, HttpStatus.UNAUTHORIZED);
-        }else{
+        try{
+            List<ProductsModel> data = productService.findAll();
+            MessageResponse messageResponse = new MessageResponse();
             messageResponse.setStatus(200);
             messageResponse.setMessage("Successfully retrieved products data");
             messageResponse.setData(data);
             return new ResponseEntity<>(messageResponse, HttpStatus.OK);
+        }catch(Exception e){
+            return CustomExceptionHandler.exceptionHandler(403, "Forbidden");
         }
-
     }
 
     @GetMapping("/product/{id}")
