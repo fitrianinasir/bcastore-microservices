@@ -15,5 +15,5 @@ public interface IProductService {
 
 
     Object delete(Integer id, String token);
-    Object orderProduct(RequestProduct requestProduct);
+    Object orderProduct(RequestProduct requestProduct, String token);
 }
