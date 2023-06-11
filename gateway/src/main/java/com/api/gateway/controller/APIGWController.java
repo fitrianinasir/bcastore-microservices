@@ -45,7 +45,86 @@ public class APIGWController {
             Mono<ResponseMessage> exc = Mono.just(responseMessage);
             return exc;
         }
-
-
     }
+
+    @GetMapping("product/{id}")
+    public Mono<ResponseMessage> getProductById(
+            @PathVariable("id") Integer id,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token
+    ){
+        Token tokenData = new Token();
+        tokenData.setToken(token.substring(7));
+        Mono<ResponseTokenValid> res = gwService.checkIsTokenValid(tokenData);
+        if(res.block().getIsValid()==true){
+            return gwService.getProductById(id);
+        }else{
+            ResponseMessage responseMessage = new ResponseMessage();
+            responseMessage.setStatus(403);
+            responseMessage.setMessage("Auth failed");
+            responseMessage.setData(null);
+            Mono<ResponseMessage> exc = Mono.just(responseMessage);
+            return exc;
+        }
+    }
+
+    @PostMapping("product/create")
+    public Mono<ResponseMessage> createProduct(
+            @RequestBody Products products,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token
+    ){
+        Token tokenData = new Token();
+        tokenData.setToken(token.substring(7));
+        Mono<ResponseTokenValid> res = gwService.checkIsTokenValid(tokenData);
+        if(res.block().getIsValid()==true){
+            return gwService.createProduct(products);
+        }else{
+            ResponseMessage responseMessage = new ResponseMessage();
+            responseMessage.setStatus(403);
+            responseMessage.setMessage("Auth failed");
+            responseMessage.setData(null);
+            Mono<ResponseMessage> exc = Mono.just(responseMessage);
+            return exc;
+        }
+    }
+    @PutMapping("product/update/{id}")
+    public Mono<ResponseMessage> updateProductById(
+            @RequestBody Products products,
+            @PathVariable("id") Integer id,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token
+    ){
+        Token tokenData = new Token();
+        tokenData.setToken(token.substring(7));
+        Mono<ResponseTokenValid> res = gwService.checkIsTokenValid(tokenData);
+        if(res.block().getIsValid()==true){
+            return gwService.updateProduct(products, id);
+        }else{
+            ResponseMessage responseMessage = new ResponseMessage();
+            responseMessage.setStatus(403);
+            responseMessage.setMessage("Auth failed");
+            responseMessage.setData(null);
+            Mono<ResponseMessage> exc = Mono.just(responseMessage);
+            return exc;
+        }
+    }
+
+    @DeleteMapping("product/delete/{id}")
+    public Mono<ResponseMessage> deleteProductById(
+            @PathVariable("id") Integer id,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token
+    ){
+        Token tokenData = new Token();
+        tokenData.setToken(token.substring(7));
+        Mono<ResponseTokenValid> res = gwService.checkIsTokenValid(tokenData);
+        if(res.block().getIsValid()==true){
+            return gwService.deleteProductById(id);
+        }else{
+            ResponseMessage responseMessage = new ResponseMessage();
+            responseMessage.setStatus(403);
+            responseMessage.setMessage("Auth failed");
+            responseMessage.setData(null);
+            Mono<ResponseMessage> exc = Mono.just(responseMessage);
+            return exc;
+        }
+    }
+
 }
