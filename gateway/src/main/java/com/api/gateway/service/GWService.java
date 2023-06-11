@@ -2,6 +2,7 @@ package com.api.gateway.service;
 
 import com.api.gateway.dto.ResponseMessage;
 import com.api.gateway.dto.ResponseTokenValid;
+import com.api.gateway.dto.data.Order;
 import com.api.gateway.dto.data.Products;
 import com.api.gateway.dto.data.Token;
 import org.springframework.beans.factory.annotation.Value;
@@ -78,6 +79,15 @@ public class GWService {
         return webClient.delete()
                 .uri(productsUrl+"/product/delete/"+id)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .retrieve()
+                .bodyToMono(ResponseMessage.class);
+    }
+
+    public Mono<ResponseMessage> placeOrder(Order order){
+        return webClient.post()
+                .uri(productsUrl+"/product-trx/order")
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .body(Mono.just(order), Order.class)
                 .retrieve()
                 .bodyToMono(ResponseMessage.class);
     }
