@@ -24,6 +24,10 @@ public class GWService {
 
     @Value("${products.url}")
     private String productsUrl;
+
+    @Value("${order.url}")
+    private String orderUrl;
+
     private final WebClient webClient;
 
 
@@ -85,7 +89,7 @@ public class GWService {
 
     public Mono<ResponseMessage> placeOrder(Order order){
         return webClient.post()
-                .uri(productsUrl+"/product-trx/order")
+                .uri(orderUrl)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(Mono.just(order), Order.class)
                 .retrieve()
