@@ -8,12 +8,12 @@ import java.util.Optional;
 
 public interface IProductService {
 
-    List<ProductsModel> findAll(String token);
-    Optional<ProductsModel> findById(Integer id, String token);
+    List<ProductsModel> findAll();
+    Optional<ProductsModel> findById(Integer id);
 
-    ProductsModel save(ProductsModel productsModel, String token);
+    ProductsModel save(ProductsModel productsModel);
 
 
-    Object delete(Integer id, String token);
-    Object orderProduct(RequestProduct requestProduct, String token);
+    void delete(Integer id);
+    Object orderProduct(RequestProduct requestProduct);
 }

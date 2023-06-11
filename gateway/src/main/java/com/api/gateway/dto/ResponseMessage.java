@@ -1,5 +1,7 @@
 package com.api.gateway.dto;
 
+import com.api.gateway.dto.data.Products;
+
 public class ResponseMessage<T> {
 
         private Integer status;
@@ -22,12 +24,11 @@ public class ResponseMessage<T> {
             this.message = message;
         }
 
-        public T getData() {
-            return data;
-        }
+    public T getData() {
+        return data;
+    }
 
-        public void setData(T data) {
-            this.data = data;
-        }
-
+    public void setData(T data) {
+        this.data = data;
+    }
 }

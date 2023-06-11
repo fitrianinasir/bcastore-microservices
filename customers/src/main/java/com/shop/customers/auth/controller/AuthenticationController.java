@@ -11,6 +11,7 @@ import com.shop.customers.repository.CustomerRepository;
 import com.shop.customers.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,9 +44,12 @@ public class AuthenticationController {
     public ResponseEntity<ValidateResponse> isValid(@RequestBody ValidateRequest validateRequest){
         String jwt = validateRequest.getToken();
         String userEmail = jwtService.extractEmail(jwt);
+
+
         Boolean checkValidation = jwtService.isTokenValid(jwt, customerRepository.findByEmail(userEmail));
         ValidateResponse validateResponse = new ValidateResponse();
-        validateResponse.setIsValid(true);
-        return ResponseEntity.ok(validateResponse);
+        validateResponse.setIsValid(checkValidation);
+        return new ResponseEntity<>(validateResponse, HttpStatus.OK);
+
     }
 }

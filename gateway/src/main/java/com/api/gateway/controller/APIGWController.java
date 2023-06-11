@@ -2,6 +2,7 @@ package com.api.gateway.controller;
 
 import com.api.gateway.dto.ResponseMessage;
 import com.api.gateway.dto.ResponseTokenValid;
+import com.api.gateway.dto.data.Products;
 import com.api.gateway.dto.data.Token;
 import com.api.gateway.service.GWService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -27,12 +29,23 @@ public class APIGWController {
     GWService gwService;
 
     @GetMapping("products")
-    public Mono<ResponseTokenValid> getAllProducts(
+    public Mono<ResponseMessage> getAllProducts(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token
     ){
-        System.out.println("calling controller");
         Token tokenData = new Token();
         tokenData.setToken(token.substring(7));
-        return gwService.checkIsTokenValid(tokenData);
+        Mono<ResponseTokenValid> res = gwService.checkIsTokenValid(tokenData);
+        if(res.block().getIsValid()==true){
+            return gwService.getAllProducts();
+        }else{
+            ResponseMessage responseMessage = new ResponseMessage();
+            responseMessage.setStatus(403);
+            responseMessage.setMessage("Auth failed");
+            responseMessage.setData(null);
+            Mono<ResponseMessage> exc = Mono.just(responseMessage);
+            return exc;
+        }
+
+
     }
 }

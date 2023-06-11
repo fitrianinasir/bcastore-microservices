@@ -27,31 +27,22 @@ public class ProductTransactionController {
 
 
     @PostMapping("/order")
-    public @ResponseBody ResponseEntity<MessageResponse> orderProduct(@RequestBody RequestProduct requestProduct,
-                                                                      @RequestHeader(HttpHeaders.AUTHORIZATION) String token){
+    public @ResponseBody ResponseEntity<MessageResponse> orderProduct(@RequestBody RequestProduct requestProduct){
 
-        try {
-            TokenData tokenData = new TokenData();
-            tokenData.setToken(token.substring(7));
+        Object res = productService.orderProduct(requestProduct);
 
-            Object res = productService.orderProduct(requestProduct, tokenData.getToken());
-
-            MessageResponse messageResponse = new MessageResponse();
-            if(res != null){
-                messageResponse.setStatus(200);
-                messageResponse.setMessage("Order done Successfully");
-                messageResponse.setData(res);
-                return new ResponseEntity<>(messageResponse, HttpStatus.OK);
-            }else{
-                messageResponse.setStatus(400);
-                messageResponse.setMessage("Failed to order, stock unavailable");
-                messageResponse.setData(null);
-                return new ResponseEntity<>(messageResponse, HttpStatus.BAD_REQUEST);
-            }
-        }catch (Exception e){
-            return CustomExceptionHandler.exceptionHandler(403, "Forbidden");
+        MessageResponse messageResponse = new MessageResponse();
+        if(res != null){
+            messageResponse.setStatus(200);
+            messageResponse.setMessage("Order done Successfully");
+            messageResponse.setData(res);
+            return new ResponseEntity<>(messageResponse, HttpStatus.OK);
+        }else{
+            messageResponse.setStatus(400);
+            messageResponse.setMessage("Failed to order, stock unavailable");
+            messageResponse.setData(null);
+            return new ResponseEntity<>(messageResponse, HttpStatus.BAD_REQUEST);
         }
-
 
     }
 }

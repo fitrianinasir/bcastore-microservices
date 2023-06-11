@@ -1,6 +1,8 @@
 package com.api.gateway.service;
 
+import com.api.gateway.dto.ResponseMessage;
 import com.api.gateway.dto.ResponseTokenValid;
+import com.api.gateway.dto.data.Products;
 import com.api.gateway.dto.data.Token;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -8,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.print.attribute.standard.Media;
@@ -18,6 +21,8 @@ public class GWService {
     @Value("${auth.url}")
     private String authUrl;
 
+    @Value("${products.url}")
+    private String productsUrl;
     private final WebClient webClient;
 
 
@@ -33,5 +38,13 @@ public class GWService {
                 .body(Mono.just(token), Token.class)
                 .retrieve()
                 .bodyToMono(ResponseTokenValid.class);
+    }
+
+    public Mono<ResponseMessage> getAllProducts(){
+        return webClient.get()
+                .uri(productsUrl+"/products")
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .retrieve()
+                .bodyToMono(ResponseMessage.class);
     }
 }
