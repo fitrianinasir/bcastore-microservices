@@ -18,6 +18,12 @@ public class NotificationModel {
     @Column(name = "order_id")
     private String order_id;
 
+    @Column(name = "recipient")
+    private String recipient;
+
+    @Column(name = "subject")
+    private String subject;
+
     @Column(name = "body")
     private String body;
 
