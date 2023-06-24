@@ -43,7 +43,6 @@ public class OrderModel {
     @Column(name = "notification_status")
     private String notification_status;
 
-
     @Column(name = "num_of_orders")
     private Integer num_of_orders;
 

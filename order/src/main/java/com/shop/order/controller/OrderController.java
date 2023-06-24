@@ -28,6 +28,16 @@ public class OrderController {
         return new ResponseEntity<>(messageResponse, HttpStatus.OK);
     }
 
+    @PostMapping("/place-order2")
+    public @ResponseBody ResponseEntity<MessageResponse> placeOrder2(@RequestBody OrderModel orderModel){
+        MessageResponse messageResponse = new MessageResponse();
+        OrderModel data = orderService.saveWithPayment(orderModel);
+        messageResponse.setStatus(200);
+        messageResponse.setMessage("Your order has placed successfully");
+        messageResponse.setData(data);
+        return new ResponseEntity<>(messageResponse, HttpStatus.OK);
+    }
+
     @GetMapping("/order-hists")
     public @ResponseBody ResponseEntity<MessageResponse> getAllOrderHist(){
         MessageResponse messageResponse = new MessageResponse();

@@ -1,7 +1,9 @@
 package com.shop.order.service;
 
 import com.shop.order.dto.MessageResponse;
+import com.shop.order.dto.MessageResponse2;
 import com.shop.order.dto.OrderProduct;
+import com.shop.order.dto.PushPaymentDTO;
 import com.shop.order.model.OrderModel;
 import com.shop.order.repository.OrderRepository;
 import jakarta.persistence.criteria.Order;
@@ -14,6 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,7 +48,42 @@ public class OrderService implements IOrderService{
                 .retrieve()
                 .bodyToMono(MessageResponse.class);
         if(res.block().getStatus()==200){
+
             return orderRepository.save(orderModel);
+        }else{
+            return null;
+        }
+    }
+
+    @Override
+    public OrderModel saveWithPayment(OrderModel orderModel){
+        OrderProduct orderProduct = new OrderProduct();
+        orderProduct.setProductId(orderModel.getId_product());
+        orderProduct.setAmount(orderModel.getNum_of_orders());
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        orderModel.setOrder_date(dateFormat.format(date));
+
+        MessageResponse2 res = webClient.post()
+                .uri(orderUrl)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .body(Mono.just(orderProduct), OrderProduct.class)
+                .retrieve()
+                .bodyToMono(MessageResponse2.class).block();
+        if(res.getStatus()==200){
+            OrderModel save = orderRepository.save(orderModel);
+            System.out.println("Calling save with payment before");
+            PushPaymentDTO pushPaymentDTO = new PushPaymentDTO();
+            pushPaymentDTO.setOrder_id(save.getId());
+            pushPaymentDTO.setRecipient("fitrianinasir8@gmail.com");
+            pushPaymentDTO.setProduct_name(save.getProduct_name());
+            pushPaymentDTO.setPayment_type(save.getPayment_name());
+            pushPaymentDTO.setAmount(save.getNum_of_orders());
+            pushPaymentDTO.setPrice(save.getProduct_price());
+            pushPaymentDTO.setTotal_payment(save.getTotal_charging());
+
+
+            return save;
         }else{
             return null;
         }

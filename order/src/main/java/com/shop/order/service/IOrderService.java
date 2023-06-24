@@ -12,7 +12,10 @@ import java.util.Optional;
 public interface IOrderService{
 
     OrderModel save(OrderModel orderModel);
+    OrderModel saveWithPayment(OrderModel orderModel);
     Optional<OrderModel> findById(Integer id);
 
+
     List<OrderModel> findAll();
+
 }
