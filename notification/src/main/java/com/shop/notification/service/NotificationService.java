@@ -31,12 +31,26 @@ public class NotificationService {
 
     public NotificationModel pushNotification(NotificationModel notificationModel){
         try{
+            String emailBody = "Hi Dear!\n" +
+                    "\n" +
+                    "Your order with details below has been placed!\n" +
+                    "product\t\tamount\tprice\t\ttotal\n" +
+                    notificationModel.getBody() +
+                    "\n" +
+                    "\n" +
+                    "Thank you for your order!\n" +
+                    "\n" +
+                    "Regards,\n" +
+                    "BCA Shop";
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             mailMessage.setFrom(sender);
             mailMessage.setTo(notificationModel.getRecipient());
-            mailMessage.setText(notificationModel.getBody());
-            mailMessage.setSubject(notificationModel.getSubject());
+            mailMessage.setText(emailBody);
+            mailMessage.setSubject("BCA STORE");
+
             javaMailSender.send(mailMessage);
+            notificationModel.setSubject("BCA STORE");
+            notificationModel.setStatus("SUCCESS");
             NotificationModel save = notificationRepository.save(notificationModel);
             System.out.println("Email sent successfully");
             return save;

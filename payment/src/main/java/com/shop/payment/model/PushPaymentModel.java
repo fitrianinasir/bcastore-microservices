@@ -16,7 +16,7 @@ public class PushPaymentModel {
     private Integer id;
 
     @Column(name = "order_id")
-    private String order_id;
+    private Integer order_id;
 
     @Column(name = "payment_type")
     private String payment_type;
@@ -27,6 +27,6 @@ public class PushPaymentModel {
     @Column(name = "payment_date")
     private String payment_date;
 
-    @Column(name = "status")
-    private String status;
+    @Column(name = "status_payment")
+    private String status_payment;
 }

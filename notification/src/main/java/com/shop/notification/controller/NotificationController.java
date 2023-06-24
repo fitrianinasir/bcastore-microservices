@@ -29,7 +29,7 @@ public class NotificationController {
     public @ResponseBody ResponseEntity<ResponseMessage> pushNotification(@RequestBody NotificationModel notificationModel){
         ResponseMessage responseMessage = new ResponseMessage();
         responseMessage.setStatus(200);
-        responseMessage.setMessage("Notification sent successfully");
+        responseMessage.setMessage("Email sent successfully");
         responseMessage.setData(notificationService.pushNotification(notificationModel));
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
