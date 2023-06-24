@@ -34,11 +34,15 @@ public class OrderModel {
     @Column(name = "product_price")
     private Integer product_price;
 
-    @Column(name = "id_payment")
-    private Integer id_payment;
-
     @Column(name = "payment_name")
     private String payment_name;
+
+    @Column(name = "payment_status")
+    private String payment_status;
+
+    @Column(name = "notification_status")
+    private String notification_status;
+
 
     @Column(name = "num_of_orders")
     private Integer num_of_orders;

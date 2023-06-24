@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 
@@ -111,6 +112,40 @@ public class APIGWController {
         Mono<ResponseTokenValid> res = gwService.checkIsTokenValid(tokenData);
         if(res.block().getIsValid()==true){
             return gwService.deleteProductById(id);
+        }else{
+            ResponseMessage responseMessage = new ResponseMessage();
+            responseMessage.setStatus(403);
+            responseMessage.setMessage("Auth failed");
+            responseMessage.setData(null);
+            Mono<ResponseMessage> exc = Mono.just(responseMessage);
+            return exc;
+        }
+    }
+
+    @GetMapping("/order-hists")
+    public Flux<ResponseMessage> getAllOrderHist(@RequestHeader(HttpHeaders.AUTHORIZATION) String token){
+        Token tokenData = new Token();
+        tokenData.setToken(token.substring(7));
+        Mono<ResponseTokenValid> res = gwService.checkIsTokenValid(tokenData);
+        if(res.block().getIsValid()==true){
+            return gwService.getAllOrderHist();
+        }else{
+            ResponseMessage responseMessage = new ResponseMessage();
+            responseMessage.setStatus(403);
+            responseMessage.setMessage("Auth failed");
+            responseMessage.setData(null);
+            Flux<ResponseMessage> exc = Flux.just(responseMessage);
+            return exc;
+        }
+    }
+
+    @GetMapping("/order-hist/{id}")
+    public Mono<ResponseMessage> getOrderHistById(@PathVariable("id") Integer id, @RequestHeader(HttpHeaders.AUTHORIZATION) String token){
+        Token tokenData = new Token();
+        tokenData.setToken(token.substring(7));
+        Mono<ResponseTokenValid> res = gwService.checkIsTokenValid(tokenData);
+        if(res.block().getIsValid()==true){
+            return gwService.getOrderHistById(id);
         }else{
             ResponseMessage responseMessage = new ResponseMessage();
             responseMessage.setStatus(403);

@@ -27,4 +27,21 @@ public class OrderController {
         messageResponse.setData(data);
         return new ResponseEntity<>(messageResponse, HttpStatus.OK);
     }
+
+    @GetMapping("/order-hists")
+    public @ResponseBody ResponseEntity<MessageResponse> getAllOrderHist(){
+        MessageResponse messageResponse = new MessageResponse();
+        messageResponse.setStatus(200);
+        messageResponse.setMessage("All Data Retrieved Successfully");
+        messageResponse.setData(orderService.findAll());
+        return new ResponseEntity<>(messageResponse, HttpStatus.OK);
+    }
+    @GetMapping("/order-hist/{id}")
+    public @ResponseBody ResponseEntity<MessageResponse> getOrderHistById(@PathVariable("id") Integer id){
+        MessageResponse messageResponse = new MessageResponse();
+        messageResponse.setStatus(200);
+        messageResponse.setMessage("Data is found");
+        messageResponse.setData(orderService.findById(id));
+        return new ResponseEntity<>(messageResponse, HttpStatus.OK);
+    }
 }

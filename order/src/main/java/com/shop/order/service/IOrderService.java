@@ -2,9 +2,17 @@ package com.shop.order.service;
 
 import com.shop.order.dto.MessageResponse;
 import com.shop.order.model.OrderModel;
+import jakarta.persistence.criteria.Order;
+import org.springframework.data.jpa.repository.JpaRepository;
 import reactor.core.publisher.Mono;
 
-public interface IOrderService {
+import java.util.List;
+import java.util.Optional;
+
+public interface IOrderService{
 
     OrderModel save(OrderModel orderModel);
+    Optional<OrderModel> findById(Integer id);
+
+    List<OrderModel> findAll();
 }

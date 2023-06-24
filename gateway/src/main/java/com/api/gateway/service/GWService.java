@@ -89,9 +89,25 @@ public class GWService {
 
     public Mono<ResponseMessage> placeOrder(Order order){
         return webClient.post()
-                .uri(orderUrl)
+                .uri(orderUrl+"/place-order")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(Mono.just(order), Order.class)
+                .retrieve()
+                .bodyToMono(ResponseMessage.class);
+    }
+
+    public Flux<ResponseMessage> getAllOrderHist(){
+        return webClient.get()
+                .uri(orderUrl+"/order-hists")
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .retrieve()
+                .bodyToFlux(ResponseMessage.class);
+    }
+
+    public Mono<ResponseMessage> getOrderHistById(Integer id){
+        return webClient.get()
+                .uri(orderUrl+"/order-hist/"+id)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .retrieve()
                 .bodyToMono(ResponseMessage.class);
     }

@@ -26,4 +26,13 @@ public class PushPaymentController {
         responseMessage.setData(pushPaymentService.pushPayment(pushPaymentModel));
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
+
+    @GetMapping("/payment-hist")
+    public @ResponseBody ResponseEntity<ResponseMessage> getPaymentHist(){
+        ResponseMessage responseMessage = new ResponseMessage();
+        responseMessage.setStatus(200);
+        responseMessage.setMessage("Successfully retrieved all data of payment hist");
+        responseMessage.setData(pushPaymentService.getPaymentHist());
+        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+    }
 }

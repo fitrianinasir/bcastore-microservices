@@ -4,6 +4,7 @@ import com.shop.order.dto.MessageResponse;
 import com.shop.order.dto.OrderProduct;
 import com.shop.order.model.OrderModel;
 import com.shop.order.repository.OrderRepository;
+import jakarta.persistence.criteria.Order;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderService implements IOrderService{
@@ -43,6 +47,13 @@ public class OrderService implements IOrderService{
         }else{
             return null;
         }
+    }
 
+    @Override
+    public List<OrderModel> findAll(){return orderRepository.findAll();}
+
+    @Override
+    public Optional<OrderModel> findById(Integer id){
+        return orderRepository.findById(id);
     }
 }
