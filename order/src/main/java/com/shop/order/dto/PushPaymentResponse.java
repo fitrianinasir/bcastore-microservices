@@ -8,5 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PushPaymentResponse {
-//    pr
+    private Integer status;
+    private String message;
+    private PushPaymentResponseData data;
 }

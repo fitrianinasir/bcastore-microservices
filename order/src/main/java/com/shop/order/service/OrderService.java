@@ -1,9 +1,6 @@
 package com.shop.order.service;
 
-import com.shop.order.dto.MessageResponse;
-import com.shop.order.dto.MessageResponse2;
-import com.shop.order.dto.OrderProduct;
-import com.shop.order.dto.PushPaymentDTO;
+import com.shop.order.dto.*;
 import com.shop.order.model.OrderModel;
 import com.shop.order.repository.OrderRepository;
 import jakarta.persistence.criteria.Order;
@@ -30,6 +27,9 @@ public class OrderService implements IOrderService{
 
     @Value("${order.url}")
     private String orderUrl;
+
+    @Value("${payment.url}")
+    private String paymentUrl;
 
     private final WebClient webClient;
     public OrderService(WebClient.Builder webClientBuilder){
@@ -71,22 +71,36 @@ public class OrderService implements IOrderService{
                 .retrieve()
                 .bodyToMono(MessageResponse2.class).block();
         if(res.getStatus()==200){
-            OrderModel save = orderRepository.save(orderModel);
-            System.out.println("Calling save with payment before");
-            PushPaymentDTO pushPaymentDTO = new PushPaymentDTO();
-            pushPaymentDTO.setOrder_id(save.getId());
-            pushPaymentDTO.setRecipient("fitrianinasir8@gmail.com");
-            pushPaymentDTO.setProduct_name(save.getProduct_name());
-            pushPaymentDTO.setPayment_type(save.getPayment_name());
-            pushPaymentDTO.setAmount(save.getNum_of_orders());
-            pushPaymentDTO.setPrice(save.getProduct_price());
-            pushPaymentDTO.setTotal_payment(save.getTotal_charging());
-
-
-            return save;
+            OrderModel createModel = orderRepository.save(orderModel);
+            OrderModel pushOrder = pushPaymentNotification(createModel);
+            return pushOrder;
         }else{
             return null;
         }
+    }
+
+    public OrderModel pushPaymentNotification(OrderModel orderModel){
+        System.out.println("Calling pushPaymentNotification before");
+        PushPaymentDTO pushPaymentDTO = new PushPaymentDTO();
+        pushPaymentDTO.setOrder_id(orderModel.getId());
+        pushPaymentDTO.setRecipient("fitrianinasir8@gmail.com");
+        pushPaymentDTO.setProduct_name(orderModel.getProduct_name());
+        pushPaymentDTO.setPayment_type(orderModel.getPayment_name());
+        pushPaymentDTO.setAmount(orderModel.getNum_of_orders());
+        pushPaymentDTO.setPrice(orderModel.getProduct_price());
+        pushPaymentDTO.setTotal_payment(orderModel.getTotal_charging());
+        PushPaymentResponse res = webClient.post()
+                .uri(paymentUrl)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .body(Mono.just(pushPaymentDTO), PushPaymentDTO.class)
+                .retrieve()
+                .bodyToMono(PushPaymentResponse.class).block();
+
+        orderModel.setId(orderModel.getId());
+        orderModel.setPayment_status(res.getData().getPayment_status());
+        orderModel.setNotification_status(res.getData().getNotification_status());
+
+        return orderRepository.save(orderModel);
     }
 
     @Override
