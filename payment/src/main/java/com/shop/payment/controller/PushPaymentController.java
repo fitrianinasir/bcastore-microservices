@@ -28,6 +28,15 @@ public class PushPaymentController {
         responseMessage.setData(pushPaymentService.getPaymentHist());
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
+
+    @GetMapping("/payment-hist/{id}")
+    public @ResponseBody ResponseEntity<ResponseMessage> getPaymentHistById(@PathVariable("id") Integer id){
+        ResponseMessage responseMessage = new ResponseMessage();
+        responseMessage.setStatus(200);
+        responseMessage.setMessage("Successfully retrieved all data of payment hist");
+        responseMessage.setData(pushPaymentService.getPaymentHistById(id));
+        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+    }
     @PostMapping("/push-payment")
     public  @ResponseBody ResponseEntity<ResponseMessage>  pushPayment(
             @RequestBody PaymentRequest paymentRequest

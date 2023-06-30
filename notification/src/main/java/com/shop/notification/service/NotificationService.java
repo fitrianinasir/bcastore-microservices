@@ -33,7 +33,6 @@ public class NotificationService {
             String emailBody = "Hi Dear!\n" +
                     "\n" +
                     "Your order with details below has been placed!\n" +
-                    "product\t\tamount\tprice\t\ttotal\n" +
                     notificationModel.getBody() +
                     "\n" +
                     "\n" +

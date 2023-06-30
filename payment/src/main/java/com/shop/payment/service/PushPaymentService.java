@@ -18,6 +18,7 @@ import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PushPaymentService{
@@ -37,6 +38,9 @@ public class PushPaymentService{
         return pushPaymentRepository.findAll();
     }
 
+    public Optional<PushPaymentModel> getPaymentHistById(Integer id){
+        return pushPaymentRepository.findById(id);
+    }
     public PushPaymentModel pushPayment(PaymentRequest paymentRequest){
         ChargingDTO chargingDTO = new ChargingDTO();
         chargingDTO.setCharge(paymentRequest.getTotal_payment());
@@ -72,7 +76,7 @@ public class PushPaymentService{
         Date date = new Date();
 
         String bodyNotification =
-                paymentRequest.getProduct_name() + "\t \t" + paymentRequest.getAmount() + "\t \t \t" + paymentRequest.getPrice() + "\t \t" + paymentRequest.getAmount();
+                paymentRequest.getProduct_name() + "\t \t" + paymentRequest.getAmount() + "\t \t \t" + paymentRequest.getPrice() + "\t \t" + paymentRequest.getTotal_payment();
 
 
         NotificationRequest notificationRequest = new NotificationRequest();
