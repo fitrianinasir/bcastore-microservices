@@ -25,6 +25,15 @@ public class NotificationController {
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 
+    @GetMapping("/notification/{id}")
+    public @ResponseBody ResponseEntity<ResponseMessage> getNotificationById(@PathVariable("id") Integer id){
+        ResponseMessage responseMessage = new ResponseMessage();
+        responseMessage.setStatus(200);
+        responseMessage.setMessage("Data retrieved successfully");
+        responseMessage.setData(notificationService.getNotificationById(id));
+        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+    }
+
     @PostMapping("/push-notif")
     public @ResponseBody ResponseEntity<ResponseMessage> pushNotification(@RequestBody NotificationModel notificationModel){
         ResponseMessage responseMessage = new ResponseMessage();

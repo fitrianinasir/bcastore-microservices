@@ -1,8 +1,10 @@
 package com.shop.customers.controller;
 
 
+import com.shop.customers.dto.Customer;
 import com.shop.customers.dto.CustomerDTO;
 import com.shop.customers.dto.MessageResponseDTO;
+import com.shop.customers.dto.UpdateBalance;
 import com.shop.customers.model.CustomerModel;
 import com.shop.customers.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api")
@@ -111,6 +115,29 @@ public class CustomerController {
         return new ResponseEntity<>(customerDTO, HttpStatus.OK);
     }
 
+    @PutMapping("/customer/charging/{id}")
+    public ResponseEntity<CustomerDTO> customerCharging(@PathVariable("id") Integer id,
+                                                               @RequestBody UpdateBalance updateBalance){
+        Optional<CustomerModel> res = customerRepository.findById(id);
+        Integer currentBalance = res.get().getBalance();
+        Integer charge = updateBalance.getCharge();
+        Integer afterCharging = currentBalance - charge;
+        CustomerDTO customerDTO = new CustomerDTO();
+        if(afterCharging > 0){
+            res.get().setBalance(afterCharging);
+            customerDTO.setStatus(200);
+            customerDTO.setMessage("Charging successfully");
+            customerDTO.setData(customerRepository.save(res.get()));
+            return new ResponseEntity<>(customerDTO, HttpStatus.OK);
+        }else{
+            customerDTO.setStatus(409);
+            customerDTO.setMessage("Failed to order, your balance is not enough");
+            customerDTO.setData(null);
+            return new ResponseEntity<>(customerDTO, HttpStatus.CONFLICT);
+        }
+
+
+    }
     @DeleteMapping("/customer/delete/{id}")
     public ResponseEntity<MessageResponseDTO> deleteCustomer(@PathVariable("id") Integer id){
 

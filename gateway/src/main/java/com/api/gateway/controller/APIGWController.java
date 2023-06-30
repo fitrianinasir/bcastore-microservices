@@ -177,4 +177,26 @@ public class APIGWController {
             return exc;
         }
     }
+
+    @PostMapping("product-trx/order-payment")
+    public Mono<ResponseMessage> placeOrderWithPaymentNotif(
+            @RequestBody Order order,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token
+    ){
+        Token tokenData = new Token();
+        tokenData.setToken(token.substring(7));
+
+        Mono<ResponseTokenValid> res = gwService.checkIsTokenValid(tokenData);
+
+        if(res.block().getIsValid()==true){
+            return gwService.placeOrderWithPaymentNotif(order);
+        }else{
+            ResponseMessage responseMessage = new ResponseMessage();
+            responseMessage.setStatus(403);
+            responseMessage.setMessage("Auth failed");
+            responseMessage.setData(null);
+            Mono<ResponseMessage> exc = Mono.just(responseMessage);
+            return exc;
+        }
+    }
 }

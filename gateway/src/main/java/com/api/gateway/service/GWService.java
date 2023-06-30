@@ -28,6 +28,9 @@ public class GWService {
     @Value("${order.url}")
     private String orderUrl;
 
+    @Value("${user.url}")
+    private String userUrl;
+
     private final WebClient webClient;
 
 
@@ -94,6 +97,20 @@ public class GWService {
                 .body(Mono.just(order), Order.class)
                 .retrieve()
                 .bodyToMono(ResponseMessage.class);
+    }
+
+    public Mono<ResponseMessage> placeOrderWithPaymentNotif(Order order){
+        try{
+            return webClient.post()
+                    .uri(orderUrl+"/place-order2")
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .body(Mono.just(order), Order.class)
+                    .retrieve()
+                    .bodyToMono(ResponseMessage.class);
+        }catch (Exception e){
+            return null;
+        }
+
     }
 
     public Flux<ResponseMessage> getAllOrderHist(){

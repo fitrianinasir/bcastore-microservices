@@ -32,10 +32,20 @@ public class OrderController {
     public @ResponseBody ResponseEntity<MessageResponse> placeOrder2(@RequestBody OrderModel orderModel){
         MessageResponse messageResponse = new MessageResponse();
         OrderModel data = orderService.saveWithPayment(orderModel);
-        messageResponse.setStatus(200);
-        messageResponse.setMessage("Your order has placed successfully");
-        messageResponse.setData(data);
-        return new ResponseEntity<>(messageResponse, HttpStatus.OK);
+        System.out.println("my data is " + data);
+        if(data == null){
+            messageResponse.setStatus(409);
+            messageResponse.setMessage("Failed to order, your balance is not enough");
+            messageResponse.setData(null);
+            return new ResponseEntity<>(messageResponse, HttpStatus.CONFLICT);
+
+        }else{
+            messageResponse.setStatus(200);
+            messageResponse.setMessage("Your order has placed successfully");
+            messageResponse.setData(data);
+            return new ResponseEntity<>(messageResponse, HttpStatus.OK);
+        }
+
     }
 
     @GetMapping("/order-hists")

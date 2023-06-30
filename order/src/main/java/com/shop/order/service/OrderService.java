@@ -57,6 +57,8 @@ public class OrderService implements IOrderService{
 
     @Override
     public OrderModel saveWithPayment(OrderModel orderModel){
+        //COUNT AMOUNT OF ORDER
+        orderModel.setTotal_charging(orderModel.getNum_of_orders() * orderModel.getProduct_price());
         OrderProduct orderProduct = new OrderProduct();
         orderProduct.setProductId(orderModel.getId_product());
         orderProduct.setAmount(orderModel.getNum_of_orders());
@@ -71,6 +73,7 @@ public class OrderService implements IOrderService{
                 .retrieve()
                 .bodyToMono(MessageResponse2.class).block();
         if(res.getStatus()==200){
+
             OrderModel createModel = orderRepository.save(orderModel);
             OrderModel pushOrder = pushPaymentNotification(createModel);
             return pushOrder;
@@ -83,24 +86,31 @@ public class OrderService implements IOrderService{
         System.out.println("Calling pushPaymentNotification before");
         PushPaymentDTO pushPaymentDTO = new PushPaymentDTO();
         pushPaymentDTO.setOrder_id(orderModel.getId());
+        pushPaymentDTO.setCustomer_id(orderModel.getId_customer());
         pushPaymentDTO.setRecipient("fitrianinasir8@gmail.com");
         pushPaymentDTO.setProduct_name(orderModel.getProduct_name());
         pushPaymentDTO.setPayment_type(orderModel.getPayment_name());
         pushPaymentDTO.setAmount(orderModel.getNum_of_orders());
         pushPaymentDTO.setPrice(orderModel.getProduct_price());
         pushPaymentDTO.setTotal_payment(orderModel.getTotal_charging());
-        PushPaymentResponse res = webClient.post()
-                .uri(paymentUrl)
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .body(Mono.just(pushPaymentDTO), PushPaymentDTO.class)
-                .retrieve()
-                .bodyToMono(PushPaymentResponse.class).block();
+        try{
+            PushPaymentResponse res = webClient.post()
+                    .uri(paymentUrl)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .body(Mono.just(pushPaymentDTO), PushPaymentDTO.class)
+                    .retrieve()
+                    .bodyToMono(PushPaymentResponse.class).block();
 
-        orderModel.setId(orderModel.getId());
-        orderModel.setPayment_status(res.getData().getPayment_status());
-        orderModel.setNotification_status(res.getData().getNotification_status());
+            orderModel.setId(orderModel.getId());
+            orderModel.setPayment_status(res.getData().getPayment_status());
+            orderModel.setNotification_status(res.getData().getNotification_status());
 
-        return orderRepository.save(orderModel);
+            return orderRepository.save(orderModel);
+        }catch(Exception e){
+            System.out.println(e);
+            System.out.println("return null");
+            return null;
+        }
     }
 
     @Override

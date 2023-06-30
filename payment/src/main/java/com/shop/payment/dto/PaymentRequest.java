@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PaymentRequest {
     private Integer order_id;
+    private Integer customer_id;
     private String recipient;
     private String payment_type;
     private String product_name;

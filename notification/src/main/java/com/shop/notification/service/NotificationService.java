@@ -1,12 +1,9 @@
 package com.shop.notification.service;
 
-import com.shop.notification.dto.ResponseMessage;
 import com.shop.notification.model.NotificationModel;
 import com.shop.notification.repository.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -28,6 +25,8 @@ public class NotificationService {
     public List<NotificationModel> getAllNotifications(){
         return notificationRepository.findAll();
     }
+
+    public Optional<NotificationModel> getNotificationById(Integer id){return notificationRepository.findById(id);}
 
     public NotificationModel pushNotification(NotificationModel notificationModel){
         try{
@@ -57,6 +56,5 @@ public class NotificationService {
         }catch(Exception e){
             return null;
         }
-
     }
 }

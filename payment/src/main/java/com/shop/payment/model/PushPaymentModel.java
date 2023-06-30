@@ -18,6 +18,9 @@ public class PushPaymentModel {
     @Column(name = "order_id")
     private Integer order_id;
 
+    @Column(name = "customer_id")
+    private Integer customer_id;
+
     @Column(name = "payment_type")
     private String payment_type;
 

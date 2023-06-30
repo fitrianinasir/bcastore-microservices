@@ -32,24 +32,31 @@ public class PushPaymentController {
     public  @ResponseBody ResponseEntity<ResponseMessage>  pushPayment(
             @RequestBody PaymentRequest paymentRequest
             ){
-        NotificationResponse notifRes = pushPaymentService.pushNotification(paymentRequest);
+
         PushPaymentModel paymentRes = pushPaymentService.pushPayment(paymentRequest);
-
-
-        ResponseData responseData = new ResponseData();
-        responseData.setId_payment(paymentRes.getId());
-        responseData.setId_notification(notifRes.getData().getId());
-        responseData.setRecipient(notifRes.getData().getRecipient());
-        responseData.setPayment_status(paymentRes.getStatus_payment());
-        responseData.setNotification_status(notifRes.getData().getStatus());
-
         ResponseMessage responseMessage = new ResponseMessage();
-        responseMessage.setStatus(200);
-        responseMessage.setMessage("Payment pushed successfully");
-        responseMessage.setData(responseData);
+
+        if(paymentRes != null){
+            NotificationResponse notifRes = pushPaymentService.pushNotification(paymentRequest);
+
+            ResponseData responseData = new ResponseData();
+            responseData.setId_payment(paymentRes.getId());
+            responseData.setId_notification(notifRes.getData().getId());
+            responseData.setRecipient(notifRes.getData().getRecipient());
+            responseData.setPayment_status(paymentRes.getStatus_payment());
+            responseData.setNotification_status(notifRes.getData().getStatus());
 
 
-        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+            responseMessage.setStatus(200);
+            responseMessage.setMessage("Payment pushed successfully");
+            responseMessage.setData(responseData);
+            return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+        }else{
+            responseMessage.setStatus(409);
+            responseMessage.setMessage("Failed to order, your balance is not enough");
+            responseMessage.setData(null);
+            return new ResponseEntity<>(responseMessage, HttpStatus.CONFLICT);
+        }
     }
 
 

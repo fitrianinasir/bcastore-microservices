@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class NotificationReqDTO {
     private Integer id;
     private Integer order_id;
+    private Integer customer_id;
     private String recipient;
     private String subject;
     private String body;

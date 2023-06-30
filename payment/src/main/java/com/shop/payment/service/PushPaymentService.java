@@ -1,9 +1,6 @@
 package com.shop.payment.service;
 
-import com.shop.payment.dto.NotificationRequest;
-import com.shop.payment.dto.NotificationResponse;
-import com.shop.payment.dto.PaymentRequest;
-import com.shop.payment.dto.ResponseMessage;
+import com.shop.payment.dto.*;
 import com.shop.payment.model.PushPaymentModel;
 import com.shop.payment.repository.PaymentRepository;
 import com.shop.payment.repository.PushPaymentRepository;
@@ -26,6 +23,9 @@ import java.util.List;
 public class PushPaymentService{
     @Value("${notif.url}")
     private String notifUrl;
+
+    @Value("${customer.url}")
+    private String customerUrl;
     @Autowired
     PushPaymentRepository pushPaymentRepository;
 
@@ -38,15 +38,32 @@ public class PushPaymentService{
     }
 
     public PushPaymentModel pushPayment(PaymentRequest paymentRequest){
-        PushPaymentModel pushPaymentModel = new PushPaymentModel();
-        pushPaymentModel.setOrder_id(paymentRequest.getOrder_id());
-        pushPaymentModel.setPayment_type(paymentRequest.getPayment_type());
-        pushPaymentModel.setTotal_payment(paymentRequest.getTotal_payment());
-        pushPaymentModel.setPayment_date(paymentRequest.getPayment_date());
-        pushPaymentModel.setStatus_payment("SUCCESS");
-        return pushPaymentRepository.save(pushPaymentModel);
-    }
+        ChargingDTO chargingDTO = new ChargingDTO();
+        chargingDTO.setCharge(paymentRequest.getTotal_payment());
+        try{
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = new Date();
 
+
+            ResponseMessage res = webClient.put()
+                    .uri(customerUrl+"/charging/"+paymentRequest.getCustomer_id())
+                    .body(Mono.just(chargingDTO), ChargingDTO.class)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .bodyToMono(ResponseMessage.class).block();
+            PushPaymentModel pushPaymentModel = new PushPaymentModel();
+            pushPaymentModel.setOrder_id(paymentRequest.getOrder_id());
+            pushPaymentModel.setCustomer_id(paymentRequest.getCustomer_id());
+            pushPaymentModel.setPayment_type(paymentRequest.getPayment_type());
+            pushPaymentModel.setTotal_payment(paymentRequest.getTotal_payment());
+            pushPaymentModel.setPayment_date(dateFormat.format(date));
+            pushPaymentModel.setStatus_payment("SUCCESS");
+            return pushPaymentRepository.save(pushPaymentModel);
+        }catch (Exception e){
+            return null;
+        }
+
+    }
 
     public NotificationResponse pushNotification(PaymentRequest paymentRequest){
         System.out.println("Push Notif Payment Called");
